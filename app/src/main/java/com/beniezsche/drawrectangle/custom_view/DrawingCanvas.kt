@@ -40,7 +40,7 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
                 downX = event.x
                 downY = event.y
 
-                currentColor = Color.rgb((0..255).random(),(0..255).random(), (0..255).random() )
+                currentColor = getRandomColor()
 
             }
             MotionEvent.ACTION_MOVE -> {
@@ -58,7 +58,6 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
                     isRectangleBeingDrawn = false
 
                     val rectItem = RectItem(0, downX, downY, moveX, moveY, currentColor)
-
                     rects.add(rectItem)
 
                     drawingListener.onDrawingRectangleComplete(rectItem)
@@ -70,7 +69,6 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
                     moveX = 0f
                     moveY = 0f
                 }
-
             }
         }
 
@@ -98,6 +96,9 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
         }
     }
 
+    private fun getRandomColor() : Int {
+        return Color.rgb((0..255).random(),(0..255).random(), (0..255).random() )
+    }
 
     interface DrawingListener {
         fun onDrawingRectangleComplete(rectItem: RectItem)

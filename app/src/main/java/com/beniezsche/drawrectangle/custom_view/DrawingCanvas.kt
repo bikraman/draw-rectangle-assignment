@@ -13,8 +13,7 @@ import kotlin.math.abs
 
 class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context, attributeSet) {
 
-
-    private val rects = ArrayList<RectItem>()
+    val rects = ArrayList<RectItem>()
 
     private var downX = 0f
     private var downY = 0f
@@ -24,10 +23,14 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
 
     private val paint = Paint()
 
+    lateinit var drawingListener: DrawingListener
 
     private var isRectangleBeingDrawn = false
 
     private var currentColor = Color.TRANSPARENT
+
+    private var THRESHOLD = 30
+
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
 
@@ -42,7 +45,7 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
             }
             MotionEvent.ACTION_MOVE -> {
 
-                if (abs(moveX - downX) > 10 || abs(moveY - downY) > 10)
+                if (abs(moveX - downX) > THRESHOLD || abs(moveY - downY) > THRESHOLD)
                     isRectangleBeingDrawn = true
 
                 moveY = event.y
@@ -50,16 +53,24 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
             }
             MotionEvent.ACTION_UP -> {
 
-                isRectangleBeingDrawn = false
+                if (isRectangleBeingDrawn) {
 
-                rects.add(RectItem(0, downX, downY, moveX, moveY, currentColor))
+                    isRectangleBeingDrawn = false
 
-                currentColor = Color.TRANSPARENT
-                downX = 0f
-                downY = 0f
+                    val rectItem = RectItem(0, downX, downY, moveX, moveY, currentColor)
 
-                moveX = 0f
-                moveY = 0f
+                    rects.add(rectItem)
+
+                    drawingListener.onDrawingRectangleComplete(rectItem)
+
+                    currentColor = Color.TRANSPARENT
+                    downX = 0f
+                    downY = 0f
+
+                    moveX = 0f
+                    moveY = 0f
+                }
+
             }
         }
 
@@ -85,6 +96,11 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
             paint.color = currentColor
             canvas.drawRect(downX, downY, moveX, moveY, paint)
         }
+    }
+
+
+    interface DrawingListener {
+        fun onDrawingRectangleComplete(rectItem: RectItem)
     }
 
 

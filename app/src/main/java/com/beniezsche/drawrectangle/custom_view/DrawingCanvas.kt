@@ -37,8 +37,13 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
             }
             MotionEvent.ACTION_MOVE -> {
 
-                rects[rects.size - 1].rectF.bottom = event.y
-                rects[rects.size - 1].rectF.right = event.x
+                val moveY = event.y
+                val moveX = event.x
+
+                Log.d("DrawRect", "moveX: $moveX moveY: $moveY")
+
+                rects[rects.size - 1].rectF.bottom = moveY
+                rects[rects.size - 1].rectF.right = moveX
             }
             MotionEvent.ACTION_UP -> {
                 downX = 0f
@@ -61,7 +66,6 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-
 
         for (rect:RectItem in rects) {
             Log.d("DrawRect", rect.rectF.toShortString())

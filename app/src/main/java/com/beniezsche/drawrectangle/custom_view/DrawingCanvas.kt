@@ -10,11 +10,12 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import kotlin.random.Random
 
 class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context, attributeSet) {
 
 
-    private val rects = ArrayList<RectF>()
+    private val rects = ArrayList<RectItem>()
 
     private var downX = 0f
     private var downY = 0f
@@ -29,12 +30,15 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
 
                 Log.d("DrawRect", "downX: $downX downY: $downY")
 
-                rects.add(RectF(downX, downY, 0f,0f))
+                val rect = RectF(downX, downY, 0f,0f)
+                val color = Color.rgb((0..255).random(), (0..255).random(), (0..255).random())
+
+                rects.add(RectItem(rect, color))
             }
             MotionEvent.ACTION_MOVE -> {
 
-                rects[rects.size - 1].bottom = event.y
-                rects[rects.size - 1].right = event.x
+                rects[rects.size - 1].rectF.bottom = event.y
+                rects[rects.size - 1].rectF.right = event.x
             }
             MotionEvent.ACTION_UP -> {
                 downX = 0f
@@ -58,12 +62,13 @@ class DrawingCanvas(context: Context, attributeSet: AttributeSet) : View(context
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        paint.color = Color.RED
 
-        for (rect in rects) {
-
-            Log.d("DrawRect", rect.toShortString())
-            canvas.drawRect(rect, paint)
+        for (rect:RectItem in rects) {
+            Log.d("DrawRect", rect.rectF.toShortString())
+            paint.color = rect.color
+            canvas.drawRect(rect.rectF, paint)
         }
     }
+
+    class RectItem(val rectF: RectF, val color: Int)
 }
